@@ -20,12 +20,13 @@ function svd_back(U::AbstractArray, S::AbstractArray{T}, V, dU, dS, dV; η::Real
 
     res = ZeroAdder()
     if !(dU isa Nothing)
-        J = F.*(U'*dU)
-        res += (J+J')*Diagonal(S)
+        UdU = U'*dU
+        J = F.*(UdU)
+        res += (J+J')*Diagonal(S) + Diagonal(1im*imag(diag(UdU)) .* Sinv)
     end
-
     if !(dV isa Nothing)
-        K = F.*(V'*dV)
+        VdV = V'*dV
+        K = F.*(VdV)
         res += Diagonal(S) * (K+K')
     end
     if !(dS isa Nothing)
